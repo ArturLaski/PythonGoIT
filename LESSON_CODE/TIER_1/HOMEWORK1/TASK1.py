@@ -34,7 +34,7 @@ def get_birthdays_per_week(users):
             birthday_weekday = 0  # Monday
         
         # Check if the birthday is within the next week starting from Monday
-        if delta_days < 7:
+        if delta_days < 7 + today.weekday():
             # Store the user's name under the appropriate day of the week
             birthday_weekday_name = (monday_of_next_week + timedelta(days=birthday_weekday)).strftime("%A")
             birthdays_per_week[birthday_weekday_name].append(name)
@@ -47,7 +47,7 @@ def get_birthdays_per_week(users):
 users = [
     {"name": "Bill Gates", "birthday": datetime(1955, 10, 12)},
     {"name": "Jill Valentine", "birthday": datetime(1974, 11, 30)},
-    {"name": "Kim Kardashian", "birthday": datetime(1980, 3, 12)},
+    {"name": "Kim Kardashian", "birthday": datetime(1980, 3, 15)},
     {"name": "Jan Koum", "birthday": datetime(1976, 2, 24)},
 ]
 
