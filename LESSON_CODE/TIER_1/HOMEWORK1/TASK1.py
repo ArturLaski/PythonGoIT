@@ -8,6 +8,9 @@ def get_birthdays_per_week(users):
     # Get the current date
     today = datetime.today().date()
     
+    # Adjust current date to the start of the next week (Monday)
+    monday_of_next_week = today + timedelta(days=(7 - today.weekday()))
+    
     # Iterate through each user
     for user in users:
         name = user["name"]
@@ -24,29 +27,27 @@ def get_birthdays_per_week(users):
         delta_days = (birthday_this_year - today).days
         
         # Determine the day of the week for the birthday
-        birthday_weekday_n = birthday_this_year.strftime("%A")
         birthday_weekday = birthday_this_year.weekday()
         
-        print(f'{birthday}, {today}, {birthday_this_year}, {delta_days}, {birthday_weekday}, {birthday_weekday_n}') 
-        birthday_weekday = (birthday_weekday) % 7
-        print(f'{birthday}, {today}, {birthday_this_year}, {delta_days}, {birthday_weekday}, {birthday_weekday_n}') 
         # If birthday falls on a weekend, move it to Monday
         if birthday_weekday >= 5:
-            birthday_weekday_n = "Monday"
-            #print(f'{birthday}, {today}, {birthday_this_year}, {delta_days}, {birthday_weekday}') 
-        # Store the user's name under the appropriate day of the week
-        if birthday_weekday < 7:
-            birthdays_per_week[birthday_weekday_n].append(name)
-        print(f'{birthday}, {today}, {birthday_this_year}, {delta_days}, {birthday_weekday}, {birthday_weekday_n}') 
+            birthday_weekday = 0  # Monday
+        
+        # Check if the birthday is within the next week starting from Monday
+        if delta_days < 7:
+            # Store the user's name under the appropriate day of the week
+            birthday_weekday_name = (monday_of_next_week + timedelta(days=birthday_weekday)).strftime("%A")
+            birthdays_per_week[birthday_weekday_name].append(name)
+    
     # Display the result
     for day, birthdays in birthdays_per_week.items():
         print(f"{day}: {', '.join(birthdays)}")
 
 # Example usage:
 users = [
-    {"name": "Bill Gates", "birthday": datetime(1955, 10, 28)},
+    {"name": "Bill Gates", "birthday": datetime(1955, 10, 12)},
     {"name": "Jill Valentine", "birthday": datetime(1974, 11, 30)},
-    {"name": "Kim Kardashian", "birthday": datetime(1980, 10, 20)},
+    {"name": "Kim Kardashian", "birthday": datetime(1980, 3, 12)},
     {"name": "Jan Koum", "birthday": datetime(1976, 2, 24)},
 ]
 
