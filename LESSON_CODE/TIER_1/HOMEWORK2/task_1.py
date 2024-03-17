@@ -40,7 +40,7 @@ def show_phone(args, contacts):
         raise KeyError
 
 @input_error
-def show_all(contacts):
+def show_all(args, contacts):
     if not contacts:
         return "No contacts found."
     else:
@@ -70,7 +70,7 @@ def main():
         elif command == "phone":
             print(show_phone(args, contacts))
         elif command == "all":
-            print(show_all(contacts))
+            print(show_all(args, contacts))
         else:
             print("Invalid command.")
 
