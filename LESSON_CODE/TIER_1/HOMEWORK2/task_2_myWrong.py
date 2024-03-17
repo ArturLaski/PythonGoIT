@@ -5,17 +5,14 @@ class Field:
     def __str__(self):
         return str(self.value)
 
-
 class Name(Field):
     pass
-
 
 class Phone(Field):
     def __init__(self, value):
         if len(value) != 10 or not value.isdigit():
             raise ValueError("Phone number must be 10 digits.")
         super().__init__(value)
-
 
 class Record:
     def __init__(self, name):
@@ -44,7 +41,6 @@ class Record:
     def __str__(self):
         return f"Contact name: {self.name.value}, phones: {'; '.join(str(p) for p in self.phones)}"
 
-
 def input_error(func):
     def inner(*args, **kwargs):
         try:
@@ -54,7 +50,6 @@ def input_error(func):
         except KeyError:
             return "Input error: Key not found."
     return inner
-
 
 class AddressBook:
     def __init__(self):
