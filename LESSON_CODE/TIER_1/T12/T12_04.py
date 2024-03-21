@@ -21,15 +21,14 @@ class Contacts:
         
 
     def save_to_file(self):
-        with open (self.filename, "wb") as fh:
-            pickle.dump(self.contacts, fh)
-    
+        with open(self.filename, "wb") as fh:
+            pickle.dump(self, fh)
             
 
     def read_from_file(self):
         with open(self.filename, "rb") as fh:
-            self.contacts = pickle.load(fh)
-        return self    
+            copy = pickle.load(fh)
+        return copy 
             
 contacts = [
     Person(
