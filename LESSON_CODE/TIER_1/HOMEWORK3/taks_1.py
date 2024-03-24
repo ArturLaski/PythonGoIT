@@ -84,7 +84,6 @@ class AddressBook(UserDict):
     def get_birthdays_per_week(self):
         birthdays_per_week = defaultdict(list)
         today = datetime.today().date()
-        # Adjust current date to the start of the next week (Monday)
         monday_of_next_week = today + timedelta(days=(7 - today.weekday()))
         for name, record in self.data.items():
             if record.birthday:
@@ -95,8 +94,8 @@ class AddressBook(UserDict):
                 delta_days = (birthday_this_year - today).days
                 birthday_weekday = birthday_this_year.weekday()
                 if birthday_weekday >= 5:
-                    birthday_weekday = 0  # Monday
-                if delta_days < 7 : #If we want to take first monday from today we need to add this line before ":"===>   +today.weekday() 
+                    birthday_weekday = 0  
+                if delta_days < 7 : 
                     birthday_weekday_name = (monday_of_next_week + timedelta(days=birthday_weekday)).strftime("%A")
                     birthdays_per_week[birthday_weekday_name].append(name)
                     
@@ -132,11 +131,9 @@ def parse_input(user_input):
 
 def main():
     Globalfilename = 'Myaddressbook.dat'
-    
-    #Load from file 
     book = load_address_book_from_file(Globalfilename)
-
     print("Welcome to the assistant bot!")
+    
     ''' 
         Start assistant commands:
         comand lists: add, remove_phone, change_phone, phone, all, add_birthday, show_birthday, birthdays, hello, exit, close
