@@ -140,7 +140,17 @@ class AddressBook(UserDict):
                     print(f"{day}: {', '.join(names)}")
         else:
             print("No birthdays in the next week.")
-                
+
+    def when_birthdays(book):
+        today = datetime.today().date()
+        for record in book.data.values():
+            if record.birthday:
+                birthday = datetime.strptime(record.birthday.value, "%d.%m.%Y").date()
+                next_birthday = birthday.replace(year=today.year)
+                if next_birthday < today:
+                    next_birthday = next_birthday.replace(year=today.year + 1)
+                days_until_birthday = (next_birthday - today).days
+                print(f"{record.name.value}'s birthday is on {record.birthday.value}. It's in {days_until_birthday} days.")
             
 def load_address_book_from_file(filename):
     try:
@@ -323,6 +333,9 @@ def main():
 
         elif command == "birthdays":
             book.get_birthdays_per_week()
+            
+        elif command == "when_birthdays":
+            book.when_birthdays()
 
         elif command == "hello":
             print("How can I help you?")
