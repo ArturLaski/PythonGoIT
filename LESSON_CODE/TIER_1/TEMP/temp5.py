@@ -151,6 +151,24 @@ class AddressBook(UserDict):
                     next_birthday = next_birthday.replace(year=today.year + 1)
                 days_until_birthday = (next_birthday - today).days
                 print(f"{record.name.value}'s birthday is on {record.birthday.value}. It's in {days_until_birthday} days.")
+
+    def remove_contact(self, name):
+        if name in self.data:
+            del self.data[name]
+            print(f"Contact {name} deleted.")
+        else:
+            print("Contact not found.")
+
+    def remove_birthday(self, name):
+        record = self.find(name)
+        if record:
+            if record.birthday:
+                record.birthday = None
+                print(f"Birthday removed for contact {name}")
+            else:
+                print(f"No birthday set for {name}")
+        else:
+            print(f"Contact {name} not found.")
             
 def load_address_book_from_file(filename):
     try:
@@ -337,6 +355,14 @@ def main():
             
         elif command == "when_birthdays":
             book.when_birthdays()
+
+        elif command == "delete_contact":
+            try:
+                name = args[0]
+                book.remove_birthday(name)
+                book.remove_contact(name)
+            except IndexError:
+                print("Invalid command format. Use 'delete_contact [name]'")
 
         elif command == "hello":
             print("How can I help you?")
