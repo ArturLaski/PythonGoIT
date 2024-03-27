@@ -26,6 +26,21 @@ class Phone(Field):
     def validate_phone(self, phone):
         return len(str(phone)) == 10
     
+class Email(Field):
+    def __init__(self, value):
+        if self.validate_email(value):
+            self.value = value
+        else:
+            raise ValueError("Invalid email address")
+    
+    def validate_email(self, email):
+        # Basic email validation, can be improved
+        return "@" in email and "." in email
+    
+class Address(Field):
+    def __init__(self, value):
+        self.value = value
+
 class Birthday(Field):
     def __init__(self, value):
         if len(value) != 10 or not datetime.strptime(value, "%d.%m.%Y"):
@@ -36,6 +51,8 @@ class Record:
     def __init__(self, name):
         self.name = Name(name)
         self.phones = []
+        self.emails = []
+        self.addresses = []
         self.birthday = None
 
     def add_birthday(self, birthday):
@@ -43,6 +60,12 @@ class Record:
 
     def add_phone(self, phone):
         self.phones.append(Phone(phone))
+        
+    def add_email(self, email):
+        self.emails.append(Email(email))
+        
+    def add_address(self, address):
+        self.addresses.append(Address(address))
 
     def edit_phone(self, old_phone, new_phone):
         for phone in self.phones:
@@ -62,8 +85,10 @@ class Record:
 
     def __str__(self):
         phone_info = '; '.join(str(p) for p in self.phones)
+        email_info = '; '.join(str(e) for e in self.emails)
+        address_info = '; '.join(str(a) for a in self.addresses)
         birthday_info = f"Birthday: {self.birthday.value}" if self.birthday else "No birthday set"
-        return f"Contact name: {self.name.value}, phones: {phone_info}, {birthday_info}"
+        return f"Contact name: {self.name.value}, phones: {phone_info}, emails: {email_info}, address: {address_info}, {birthday_info}"
 
 class AddressBook(UserDict):
     def add_record(self, record):
@@ -145,7 +170,7 @@ def main():
     
     ''' 
         Start assistant commands:
-        comand lists: add, remove_phone, change_phone, phone, all, add_birthday, show_birthday, birthdays, hello, exit, close
+        comand lists: add, remove_phone, change_phone, add_phone, add_email, add_address, phone, all, add_birthday, show_birthday, birthdays, hello, exit, close
     ''' 
     while True:
         user_input = input("Enter command: ").strip()
@@ -153,16 +178,18 @@ def main():
         
         if command == "add":
             try:
-                name, phone = args
+                name, phone, email, address = args
                 record = Record(name)
                 record.add_phone(phone)
+                record.add_email(email)
+                record.add_address(address)
                 book.add_record(record)
-                print(f"Contact {name} added with phone number {phone}")
+                print(f"Contact {name} added with phone number {phone}, email {email}, and address {address}")
 
             except ValueError as e:
                 print(e)
-                print("Invalid command format. Use 'add [name] [phone]'")
-
+                print("Invalid command format. Use 'add [name] [phone] [email] [address]'")
+        
         elif command == "search":
             try:
                 name = args[0]
@@ -175,7 +202,7 @@ def main():
                     print("No contacts found matching the search criteria.")
             except IndexError:
                 print("Invalid command format. Use 'search [name]'")
-        
+
         elif command == "remove_phone":
             try:
                 name, phone = args
@@ -196,23 +223,62 @@ def main():
 
         elif command == "change_phone":
             try:
-                name, new_phone = args
+                name, old_phone, new_phone = args
                 record = book.find(name)
                 if record:
-                    record.edit_phone(record.phones[0].value, new_phone)
-                    print(f"Phone number changed for contact {name}")
+                    record.edit_phone(old_phone, new_phone)
+                    print(f"Phone number changed from {old_phone} to {new_phone} for contact {name}")
                 else:
-                    print(f"Contact not found")
+                    print(f"Contact {name} not found")
             except ValueError as e:
                 print(e)
-                print("Invalid command format. Use 'change [name] [new phone]'")
+                print("Invalid command format. Use 'change-phone [name] [old phone] [new phone]'")
+
+        elif command == "add_phone":
+            try:
+                name, phone = args
+                record = book.find(name)
+                if record:
+                    record.add_phone(phone)
+                    print(f"Phone number {phone} added for contact {name}")
+                else:
+                    print(f"Contact {name} not found")
+            except ValueError as e:
+                print(e)
+                print("Invalid command format. Use 'add-phone [name] [phone]'")
+
+        elif command == "add_email":
+            try:
+                name, email = args
+                record = book.find(name)
+                if record:
+                    record.add_email(email)
+                    print(f"Email {email} added for contact {name}")
+                else:
+                    print(f"Contact {name} not found")
+            except ValueError as e:
+                print(e)
+                print("Invalid command format. Use 'add-email [name] [email]'")
+
+        elif command == "add_address":
+            try:
+                name, address = args
+                record = book.find(name)
+                if record:
+                    record.add_address(address)
+                    print(f"Address {address} added for contact {name}")
+                else:
+                    print(f"Contact {name} not found")
+            except ValueError as e:
+                print(e)
+                print("Invalid command format. Use 'add-address [name] [address]'")
 
         elif command == "phone":
             try:
                 name = args[0]
                 record = book.find(name)
                 if record:
-                    print(f"Phone number for {name}: {record.phones[0]}")
+                    print(f"Phone numbers for {name}: {', '.join(str(p) for p in record.phones)}")
                 else:
                     print(f"Contact {name} not found.")
             except IndexError as e:
