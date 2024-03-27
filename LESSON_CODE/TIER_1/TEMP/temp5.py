@@ -221,6 +221,7 @@ def main():
                     phone_found = record.find_phone(phone)
                     if phone_found:
                         record.remove_phone(phone)
+                        record.add_phone("0000000000") #not remove only replace to 0000000000
                         print(f"Phone number {phone} removed for contact {name}.")
                     else:
                         print(f"Phone number {phone} not found for contact {name}.")
