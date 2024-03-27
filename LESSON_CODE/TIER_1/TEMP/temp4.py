@@ -1,8 +1,6 @@
 from datetime import datetime, timedelta
 from collections import defaultdict
-import pickle
-
-#TEST branch _Search Notes
+import re
 
 class Birthday:
     def __init__(self, date_str):
@@ -53,8 +51,12 @@ class AddressBook:
         contact = self._get_contact(name)
         return contact.phone
 
-    def show_all_contacts(self):
-        return list(self.contacts.keys())
+    def show_all_contacts(self, search_term=None):
+        if search_term:
+            search_results = [contact for contact in self.contacts.keys() if re.search(search_term, contact)]
+            return search_results
+        else:
+            return list(self.contacts.keys())
 
     def add_birthday(self, name, date_str):
         contact = self._get_contact(name)
@@ -97,10 +99,6 @@ class AddressBook:
             raise ValueError("Invalid note index.")
         del self.notes[index]   
 
-    def save_to_file(self, filename):
-        with open(filename, 'wb') as file:
-            pickle.dump(self.data, file)
-            
 # Funkcje obsługujące notatki    
 class Note:
     def __init__(self, text):
@@ -147,7 +145,7 @@ def handle_add_command(address_book, args):
     birthday = args[5]
     
     address_book.add_contact(name, phone, address, email, birthday)
-    return f"Contact {name} with phone number {phone} address {address} email {email} and birthday {birthday} added successfully."
+    return f"Contact {name} with phone number {phone}, address {address}, email {email}, and birthday {birthday} added successfully."
 
 def handle_change_command(address_book, args):
     if len(args) != 6:
@@ -159,7 +157,7 @@ def handle_change_command(address_book, args):
     new_email = args[4]
     new_birthday = args[5]
     
-    address_book.change_phone(name, new_phone, new_address, new_email, new_birthday)
+    address_book.change_phone(name, new_phone)
     return f"Contact '{name}' changed successfully."
 
 def handle_phone_command(address_book, args):
@@ -226,6 +224,9 @@ def handle_command(command, address_book):
         return Note.handle_edit_note(address_book, command[10:].split())
     elif command.startswith("delete-note "):
         return Note.handle_delete_note(address_book, command[12:].split())    
+    elif command.startswith("search "):
+        search_term = command[7:]
+        return address_book.show_all_contacts(search_term)
     else:
         return "Invalid command. Type 'help' for a list of commands."
     
@@ -248,10 +249,12 @@ def main():
 if __name__ == "__main__":
     main()
 
+
         
 # Testing of my bot:
     
 # add Pawel Ciosmak 5059722030 Lubartow aaa@gmail.com 1990-01-01
+# add Artur Laski 0721199939 katowice a@a.pl 1983-03-15
 # change Pawel Ciosmak 5059722031 Warszawa bbb@gmail.com 1990-01-02
 # phone Pawel Ciosmak
 # all
@@ -263,4 +266,5 @@ if __name__ == "__main__":
 # add-note <treść notatki>
 # edit-note <indeks notatki> <nowa treść notatki>
 # delete-note <indeks notatki>
-# 
+# search cio
+# search ski (part of name need to search)
